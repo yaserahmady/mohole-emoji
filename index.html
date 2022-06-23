@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link
+      rel="icon"
+      href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>✨</text></svg>"
+    />
+
+    <title>Emojify</title>
+
+    <script src="https://cdn.tailwindcss.com?plugins=forms"></script>
+    <style type="text/tailwindcss">
+      .emoji-font {
+        font-family: "Twemoji Mozilla", "Apple Color Emoji", "Segoe UI Emoji",
+          "Segoe UI Symbol", "Noto Color Emoji", "EmojiOne Color",
+          "Android Emoji", sans-serif;
+      }
+    </style>
+    <script defer src="//unpkg.com/alpinejs"></script>
+    <script>
+      function emojify() {
+        return {
+          input: "covid free",
+          output: null,
+          init() {
+            this.convert();
+          },
+          convert() {
+            if (this.input != null) {
+              fetch(
+                "http://127.0.0.1:9191/api/?" +
+                  new URLSearchParams({
+                    input: this.input,
+                  })
+              )
+                .then((response) => response.json())
+                .then((data) => {
+                  this.output = data;
+                });
+            } else {
+              console.log("null");
+            }
+          },
+        };
+      }
+    </script>
+  </head>
+
+  <body class="bg-rose-200" x-data="emojify()">
+    <!-- Input -->
+    <div class="fixed inset-0 max-w-xs mx-auto mt-4">
+      <div class="mx-auto w-full">
+        <label
+          for="text"
+          class="block text-sm text-center font-medium text-gray-700"
+        >
+          Text to emojify
+        </label>
+        <div class="mt-1 relative rounded-md shadow-sm">
+          <input
+            type="text"
+            name="text"
+            id="text"
+            class="uppercase focus:ring-red-500 focus:border-red-500 block w-full text-center sm:text-sm border-gray-300 rounded-md"
+            x-model="input"
+            :placeholder="input"
+            @input.debounce="convert()"
+            @focus="input = ''"
+          />
+        </div>
+      </div>
+    </div>
+
+    <!-- Output -->
+    <div class="flex h-screen items-center">
+      <div class="mx-auto text-center">
+        <span class="text-7xl emoji-font" x-text="output"></span>
+      </div>
+    </div>
+  </body>
+</html>
